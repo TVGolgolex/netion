@@ -51,12 +51,14 @@ public class ProtocolInDecoder extends ByteToMessageDecoder {
             }
         }
 
-        if (in.readableBytes() < 2) {
+        if (in.readableBytes() < 4) {
             Netion.debug("[" + auth + "]" + "Decode not enough readableBytes(" + in.readableBytes() + ";channel=" + ctx.channel().remoteAddress().toString() + ")");
             return;
         }
 
         int protocolId = in.readInt();
+
+        Netion.debug("Buffer capacity: " + in.capacity() + ", position: ");
 
         ProtocolBuffer protocolBuffer = ProtocolProvider.protocolBuffer(in);
         IProtocol iProtocol = ProtocolProvider.getProtocol(protocolId);
