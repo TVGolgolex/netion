@@ -182,7 +182,7 @@ public class PacketManager {
                 Netion.debug("Resend Packet [" + incoming.id + "/" + incoming.uniqueId + "] is blocked for resending");
                 return true;
             }
-            for (NetworkClient client : NetworkServer.NETWORK_SERVER.getClients()) {
+            for (NetworkClient client : NetworkServer.NETWORK_SERVER.getAuthenticatedClients()) {
                 if (packetSender instanceof NetworkClient networkClient && networkClient
                                                                             .getAuthentication()
                                                                             .equals(client.getAuthentication())) {

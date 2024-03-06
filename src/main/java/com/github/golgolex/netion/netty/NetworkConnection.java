@@ -88,8 +88,7 @@ public final class NetworkConnection implements PacketSender {
         this.authentication = auth;
         try {
             Netion.log("Trying to connect to " + connectableAddress.getHostName() + ":" + connectableAddress.getPort());
-            if (ssl)
-            {
+            if (ssl) {
                 sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
             }
 
@@ -101,9 +100,7 @@ public final class NetworkConnection implements PacketSender {
                         @Override
                         protected void initChannel(Channel channel) throws Exception
                         {
-
-                            if (sslContext != null)
-                            {
+                            if (sslContext != null) {
                                 channel.pipeline().addLast(sslContext.newHandler(channel.bufferAllocator(),
                                         connectableAddress.getHostName(),
                                         connectableAddress.getPort()));
@@ -114,7 +111,6 @@ public final class NetworkConnection implements PacketSender {
                                     NetworkConnection.this,
                                     true
                             ));
-
                         }
                     })
                     .channelFactory(NetworkingUtils.channelFactory());

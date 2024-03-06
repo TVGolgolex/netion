@@ -43,9 +43,9 @@ public class AuthPacketInHandler extends PacketInHandler {
             return;
         }
 
-        NetworkServer.NETWORK_SERVER.getClientAuths().removeIf(networkClientAuth -> networkClientAuth.equals(client));
+        NetworkServer.NETWORK_SERVER.getWaitingForAuth().removeIf(networkClientAuth -> networkClientAuth.equals(client));
         NetworkClient networkClient = new NetworkClient(auth, channel);
         channel.pipeline().addLast(networkClient);
-        NetworkServer.NETWORK_SERVER.getClients().add(networkClient);
+        NetworkServer.NETWORK_SERVER.getAuthenticatedClients().add(networkClient);
     }
 }

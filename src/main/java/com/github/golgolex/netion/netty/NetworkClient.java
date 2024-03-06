@@ -56,7 +56,7 @@ public class NetworkClient extends SimpleChannelInboundHandler implements Packet
                     .toString() + "/authId=" + authentication.namespace() + "#" + authentication.uniqueId() + ']');
             ctx.close();
             channel = null;
-            NetworkServer.NETWORK_SERVER.getClients().removeIf(networkClient -> networkClient.authentication.equals(authentication));
+            NetworkServer.NETWORK_SERVER.getAuthenticatedClients().removeIf(networkClient -> networkClient.authentication.equals(authentication));
         }
     }
 
@@ -67,12 +67,10 @@ public class NetworkClient extends SimpleChannelInboundHandler implements Packet
 
     @Override
     public void channelExceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-
         if (!(cause instanceof IOException)) {
             cause.printStackTrace();
         }
         //TODO:
-
     }
 
     @Override

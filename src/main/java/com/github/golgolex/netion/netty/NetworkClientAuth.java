@@ -116,13 +116,15 @@ public class NetworkClientAuth extends SimpleChannelInboundHandler<Packet> imple
             channel.close();
         }
         Netion.log("Channel disconnected [" + channel.remoteAddress().toString() + "]");
-        this.networkServer.getClientAuths().remove(this);
+        this.networkServer.getWaitingForAuth().remove(this);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Netion.debug("ChannelRead: " + msg.getClass().getSimpleName());
-        if (msg instanceof Packet packet) {
+
+        // Interaction only with AuthPacket (default ID: -400)
+        if (msg instanceof Packet packet && packet.getId() == -400) {
             Netion.debug("Received Packet [id=" + packet.getId() + ";class=" + packet.getClass().getSimpleName() + "] on " + channel.remoteAddress().toString());
             networkServer.getPacketManager().dispatchPacket(packet, this, ctx);
         }
@@ -130,9 +132,12 @@ public class NetworkClientAuth extends SimpleChannelInboundHandler<Packet> imple
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, Packet msg) throws Exception {
-        //does nothing
         Netion.debug("messageReceived");
-        Netion.debug("Received Packet [id=" + msg.getId() + ";class=" + msg.getClass().getSimpleName() + "] on " + channel.remoteAddress().toString());
-        networkServer.getPacketManager().dispatchPacket(msg, this, ctx);
+
+        // Interaction only with AuthPacket (default ID: -400)
+        if (msg.getId() == -400) {
+            Netion.debug("Received Packet [id=" + msg.getId() + ";class=" + msg.getClass().getSimpleName() + "] on " + channel.remoteAddress().toString());
+            networkServer.getPacketManager().dispatchPacket(msg, this, ctx);
+        }
     }
 }

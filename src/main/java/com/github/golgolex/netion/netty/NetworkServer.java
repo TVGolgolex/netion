@@ -29,7 +29,9 @@ import lombok.Getter;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Getter
@@ -43,9 +45,9 @@ public class NetworkServer extends ChannelInitializer<Channel> {
 
     private final PacketManager packetManager = new PacketManager();
 
-    private final List<NetworkClientAuth> clientAuths = new ArrayList<>();
+    private final List<NetworkClientAuth> waitingForAuth = new ArrayList<>();
 
-    private final List<NetworkClient> clients = new ArrayList<>();
+    private final List<NetworkClient> authenticatedClients = new ArrayList<>();
 
     private final List<UUID> authUniqueIdToIgnore;
 
@@ -65,8 +67,9 @@ public class NetworkServer extends ChannelInitializer<Channel> {
         NETWORK_SERVER = this;
     }
 
-    public void tryBind(boolean ssl) {
+    public void tryBind(boolean ssl, Runnable failedRunnable) {
         if (ssl) {
+            Netion.debug("Enabling SSL Context for service requests");
             SelfSignedCertificate ssc;
             try {
                 ssc = new SelfSignedCertificate();
@@ -84,6 +87,7 @@ public class NetworkServer extends ChannelInitializer<Channel> {
                 .group(bossGroup, workerGroup)
                 .option(ChannelOption.AUTO_READ, true)
                 .channelFactory(NetworkingUtils.serverChannelFactory())
+                .childOption(ChannelOption.IP_TOS, 24)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.AUTO_READ, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -100,15 +104,16 @@ public class NetworkServer extends ChannelInitializer<Channel> {
                 connected = true;
             } else {
                 Netion.log("Failed to bind @" + connectableAddress.getHostName() + ':' + connectableAddress.getPort());
+                if (failedRunnable != null) {
+                    failedRunnable.run();
+                }
             }
         });
 
         new Thread(() -> {
             try {
                 channelFuture.asStage().get();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -131,7 +136,7 @@ public class NetworkServer extends ChannelInitializer<Channel> {
                 channel,
                 this
         );
-        this.clientAuths.add(networkClientAuth);
+        this.waitingForAuth.add(networkClientAuth);
         NetworkingUtils.initChannel(channel).pipeline().addLast(
                 "client",
                 networkClientAuth

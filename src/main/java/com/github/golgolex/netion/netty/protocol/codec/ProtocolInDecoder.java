@@ -41,7 +41,7 @@ public class ProtocolInDecoder extends ByteToMessageDecoder {
         StringBuilder auth = new StringBuilder(logId + ";" + ctx.channel().remoteAddress() + ";auth=");
 
         if (NetworkServer.NETWORK_SERVER != null) {
-            for (NetworkClient client : NetworkServer.NETWORK_SERVER.getClients()) {
+            for (NetworkClient client : NetworkServer.NETWORK_SERVER.getAuthenticatedClients()) {
                 if (client.getChannel().equals(ctx.channel())) {
                     auth.append(client.getAuthentication().namespace()).append(":").append(client.getAuthentication().uniqueId());
                     break;
