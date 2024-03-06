@@ -21,6 +21,7 @@ import com.github.golgolex.netion.netty.protocol.IProtocol;
 import com.github.golgolex.netion.netty.protocol.ProtocolProvider;
 import com.github.golgolex.netion.netty.protocol.ProtocolRequest;
 import com.github.golgolex.netion.netty.protocol.ProtocolStream;
+import com.github.golgolex.netion.netty.protocol.buf.ByteBuffer;
 import com.github.golgolex.netion.netty.protocol.buf.ProtocolBuffer;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandlerContext;
@@ -37,31 +38,40 @@ public class ProtocolOutEncoder extends MessageToByteEncoder {
 
     @Override
     protected Buffer allocateBuffer(ChannelHandlerContext ctx, Object msg) throws Exception {
-        return ctx.bufferAllocator().allocate(bufferAllocation);
+        return ctx.bufferAllocator().allocate(0);
     }
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, Buffer out) throws Exception {
-        ProtocolBuffer protocolBuffer = ProtocolProvider.protocolBuffer(out);
+//        ProtocolBuffer protocolBuffer = ProtocolProvider.protocolBuffer(out);
+        ByteBuffer byteBuffer = new ByteBuffer(out);
 
         if (msg instanceof ProtocolRequest protocolRequest) {
             IProtocol iProtocol = ProtocolProvider.getProtocol(protocolRequest.getId());
+            if (iProtocol == null) {
+                Netion.debug("IProtocol for request " + protocolRequest.getId() + " is null");
+                return;
+            }
             ProtocolStream protocolStream = iProtocol.createElement(protocolRequest.getElement());
-            protocolBuffer.writeInt(iProtocol.getId());
-            protocolStream.write(protocolBuffer);
+            if (protocolStream == null) {
+                Netion.debug("ProtocolStream for request " + protocolRequest.getElement().getClass().getSimpleName() + " is null");
+                return;
+            }
+            byteBuffer.writeInt(iProtocol.getId());
+            protocolStream.write(byteBuffer);
             Netion.debug("Encode protocolStream.write(" + protocolStream.getClass().getSimpleName() +")");
         } else {
             for (IProtocol iProtocol : ProtocolProvider.protocols()) {
                 ProtocolStream protocolStream = iProtocol.createElement(msg);
                 if (protocolStream != null) {
-                    protocolBuffer.writeInt(iProtocol.getId());
-                    protocolStream.write(protocolBuffer);
+                    byteBuffer.writeInt(iProtocol.getId());
+                    protocolStream.write(byteBuffer);
                     Netion.debug("Encode [for] protocolStream.write(" + protocolStream.getClass().getSimpleName() +")");
                     break;
                 }
             }
         }
 
-        out.writeBytes(protocolBuffer);
+//        out.writeBytes(protocolBuffer);
     }
 }

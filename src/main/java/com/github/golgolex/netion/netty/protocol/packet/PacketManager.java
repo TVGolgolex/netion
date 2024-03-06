@@ -20,6 +20,7 @@ import com.github.golgolex.netion.Netion;
 import com.github.golgolex.netion.netty.NetworkClient;
 import com.github.golgolex.netion.netty.NetworkServer;
 import com.github.golgolex.netion.netty.document.Document;
+import com.github.golgolex.netion.netty.exceptions.PacketRegistrationException;
 import com.github.golgolex.netion.netty.protocol.packet.result.Result;
 import com.github.golgolex.netion.netty.protocol.sender.PacketSender;
 import com.github.golgolex.netion.utilitity.CollectionWrapper;
@@ -100,7 +101,7 @@ public class PacketManager {
 
     public boolean containsPacket(Class<? extends Packet> packet)
     {
-        return this.registeredPackets.values().stream().anyMatch(registeredPacket -> registeredPacket.packetClass().equals(packet));
+        return this.registeredPackets.values().stream().anyMatch(registeredPacket -> registeredPacket.getPacketClass().equals(packet));
     }*/
 
     public void registerHandler(int id, Class<? extends PacketInHandler> packetHandlerClass) {

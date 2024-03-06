@@ -5,6 +5,7 @@
 package com.github.golgolex.netion.netty.protocol.file;
 
 import com.github.golgolex.netion.netty.protocol.ProtocolStream;
+import com.github.golgolex.netion.netty.protocol.buf.ByteBuffer;
 import com.github.golgolex.netion.netty.protocol.buf.ProtocolBuffer;
 
 import java.io.File;
@@ -32,15 +33,15 @@ public class FileDeploy extends ProtocolStream {
     }
 
     @Override
-    public void write(ProtocolBuffer out) {
-        out.writeUTF8(dest);
+    public void write(ByteBuffer out) {
+        out.writeString(dest);
         out.writeStringCollection(Stream.of(bytes).map(String::valueOf).toList());
     }
 
     @Override
-    public void read(ProtocolBuffer in) {
-        if (in.readableBytes() != 0) {
-            this.dest = in.readUTF8();
+    public void read(ByteBuffer in) {
+        if (in.getBuffer().readableBytes() != 0) {
+            this.dest = in.readString();
             this.bytes = convertStringCollectionToByteArray(in.readStringCollection());
             toWrite();
         }

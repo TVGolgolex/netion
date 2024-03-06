@@ -73,7 +73,7 @@ public class NetDispatcher extends SimpleChannelInboundHandler {
     protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception
     {
         //does nothing
-        Netion.debug("messageReceived");
+        Netion.debug("messageReceived in Class (" + this.getClass().getSimpleName() + ")");
         if (msg instanceof Packet packet)
         {
             Netion.debug("Received Packet [id=" + packet.getId() + ";class=" + packet.getClass().getSimpleName() + "]");

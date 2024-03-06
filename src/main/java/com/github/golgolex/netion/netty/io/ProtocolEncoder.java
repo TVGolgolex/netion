@@ -16,10 +16,10 @@ package com.github.golgolex.netion.netty.io;
  * limitations under the License.
  */
 
-import com.github.golgolex.netion.netty.protocol.buf.ProtocolBuffer;
+import com.github.golgolex.netion.netty.protocol.buf.ByteBuffer;
 
 public interface ProtocolEncoder {
 
-    void write(ProtocolBuffer outPut);
+    void write(ByteBuffer outPut);
 
 }

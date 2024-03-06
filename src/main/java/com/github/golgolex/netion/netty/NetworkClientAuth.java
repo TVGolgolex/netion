@@ -132,7 +132,7 @@ public class NetworkClientAuth extends SimpleChannelInboundHandler<Packet> imple
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, Packet msg) throws Exception {
-        Netion.debug("messageReceived");
+        Netion.debug("messageReceived in Class (" + this.getClass().getSimpleName() + ")");
 
         // Interaction only with AuthPacket (default ID: -400)
         if (msg.getId() == -400) {

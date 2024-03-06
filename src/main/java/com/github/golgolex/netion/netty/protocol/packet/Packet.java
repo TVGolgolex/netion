@@ -19,6 +19,7 @@ package com.github.golgolex.netion.netty.protocol.packet;
 import com.github.golgolex.netion.Netion;
 import com.github.golgolex.netion.netty.document.Document;
 import com.github.golgolex.netion.netty.protocol.ProtocolStream;
+import com.github.golgolex.netion.netty.protocol.buf.ByteBuffer;
 import com.github.golgolex.netion.netty.protocol.buf.ProtocolBuffer;
 import lombok.Getter;
 
@@ -56,7 +57,7 @@ public class Packet extends ProtocolStream {
     }
 
     @Override
-    public void read(ProtocolBuffer in) {
+    public void read(ByteBuffer in) {
         this.id = in.readInt();
         UUID readUUID = in.readUUID();
 
@@ -75,7 +76,7 @@ public class Packet extends ProtocolStream {
     }
 
     @Override
-    public void write(ProtocolBuffer outPut) {
+    public void write(ByteBuffer outPut) {
         outPut.writeInt(this.id);
 
         if (this.uniqueId == null) {

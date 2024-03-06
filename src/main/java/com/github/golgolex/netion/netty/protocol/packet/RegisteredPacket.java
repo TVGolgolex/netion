@@ -1,5 +1,8 @@
 package com.github.golgolex.netion.netty.protocol.packet;
 
+import lombok.Getter;
+
+@Getter
 public class RegisteredPacket {
 
     private final Class<? extends Packet> packetClass;

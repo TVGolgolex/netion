@@ -61,11 +61,6 @@ public class NetworkClient extends SimpleChannelInboundHandler implements Packet
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.flush();
-    }
-
-    @Override
     public void channelExceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (!(cause instanceof IOException)) {
             cause.printStackTrace();
@@ -75,7 +70,7 @@ public class NetworkClient extends SimpleChannelInboundHandler implements Packet
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Netion.debug("messageReceived");
+        Netion.debug("messageReceived in Class (" + this.getClass().getSimpleName() + ") auth=" + this.authentication.namespace());
 
         if (!(msg instanceof Packet packet)) {
             Netion.debug("msg is not a instance of Packet packet [" + msg.getClass().getSimpleName() + "]");

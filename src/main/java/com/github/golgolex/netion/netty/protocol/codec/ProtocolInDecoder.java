@@ -22,6 +22,7 @@ import com.github.golgolex.netion.netty.NetworkServer;
 import com.github.golgolex.netion.netty.protocol.IProtocol;
 import com.github.golgolex.netion.netty.protocol.ProtocolProvider;
 import com.github.golgolex.netion.netty.protocol.ProtocolStream;
+import com.github.golgolex.netion.netty.protocol.buf.ByteBuffer;
 import com.github.golgolex.netion.netty.protocol.buf.ProtocolBuffer;
 import com.github.golgolex.netion.netty.protocol.packet.Packet;
 import com.github.golgolex.netion.utilitity.StringUtil;
@@ -60,7 +61,8 @@ public class ProtocolInDecoder extends ByteToMessageDecoder {
 
         Netion.debug("Buffer capacity: " + in.capacity() + ", position: ");
 
-        ProtocolBuffer protocolBuffer = ProtocolProvider.protocolBuffer(in);
+        ByteBuffer byteBuffer = new ByteBuffer(in);
+//        ProtocolBuffer protocolBuffer = ProtocolProvider.protocolBuffer(in.copy());
         IProtocol iProtocol = ProtocolProvider.getProtocol(protocolId);
 
         if (iProtocol == null) {
@@ -72,13 +74,13 @@ public class ProtocolInDecoder extends ByteToMessageDecoder {
 
         ProtocolStream protocolStream = iProtocol.createEmptyElement();
         Netion.debug("[" + auth + "]" + "Decode protocolStream.read(" + protocolStream.getClass().getSimpleName() + ")");
-        protocolStream.read(protocolBuffer.clone());
+        protocolStream.read(byteBuffer);
         if (protocolStream instanceof Packet packet) {
             Netion.debug("[" + auth + "]" + "Decode protocolStream.read(" + packet.getId() + ":" + packet.getUniqueId() + ":" + protocolStream.getClass().getSimpleName() + ")");
         }
         Netion.debug("[" + auth + "]" + "Decode protocolStream.fireChannelRead(" + protocolStream.getClass().getSimpleName() + ")");
         ctx.fireChannelRead(protocolStream);
 
-        in.resetOffsets();
+//        in.resetOffsets();
     }
 }

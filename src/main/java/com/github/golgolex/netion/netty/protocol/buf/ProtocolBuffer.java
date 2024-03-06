@@ -91,7 +91,7 @@ public class ProtocolBuffer implements Buffer {
         return Document.load(readUTF8());
     }
 
-    public <T extends ProtocolEncoder> void writeCollection(final Collection<T> collection)
+    /*public <T extends ProtocolEncoder> void writeCollection(final Collection<T> collection)
     {
         this.writeCollection(collection, ProtocolEncoder::write);
     }
@@ -149,7 +149,7 @@ public class ProtocolBuffer implements Buffer {
     public List<UUID> readUuidCollection()
     {
         return this.readCollection(ProtocolBuffer::readUUID);
-    }
+    }*/
 
     @Override
     public int capacity()
